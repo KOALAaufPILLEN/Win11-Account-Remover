@@ -1,14 +1,17 @@
-﻿# Retrieve the list of domain accounts
+# Retrieve the list of domain accounts
 $domainAccounts = Get-WmiObject -Class Win32_UserAccount -Filter "Domain like '%%'"
 
 # Display the domain account information
 $index = 1
 $accountChoices = @{}
 foreach ($account in $domainAccounts) {
-    $choice = "Account #$index - $($account.Name) in $($account.Domain)"
-    $accountChoices.Add($index, $account)
-    Write-Host $choice
-    $index++
+    # Exclude Administrator, DefaultAccount, and WDAGUtilityAccount
+    if ($account.Name -notin "Administrator", "DefaultAccount", "WDAGUtilityAccount") {
+        $choice = "Account #$index - $($account.Name) in $($account.Domain)"
+        $accountChoices.Add($index, $account)
+        Write-Host $choice
+        $index++
+    }
 }
 
 # Prompt for the account to remove
